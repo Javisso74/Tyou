@@ -22,7 +22,7 @@ export class [CLASS_NAME] extends UIWindow {
 [PROPERTY_DEFINITIONS]
 
     static get WINDOW_NAME(): string {
-        return "[CLASS_NAME]";
+        return UIName.[CLASS_NAME];
     }
 
     protected get customAttributeOverride(): Partial<IWindowAttribute> {
@@ -50,7 +50,9 @@ export class [CLASS_NAME] extends UIWindow {
     override onDestroy() {
         super.onDestroy();
     }
-}`;
+}
+
+UIRegistry.register(UIName.[CLASS_NAME], [CLASS_NAME]);`;
 
 // 加载组件配置
 function loadComponentConfig() {
@@ -115,6 +117,55 @@ function loadTemplate() {
 
     console.log('[UI脚本生成器] 使用默认模板');
     return DEFAULT_TEMPLATE;
+}
+
+// 向 UIName.ts 枚举中追加新条目
+async function addUINameEntry(className) {
+    try {
+        const targetDir = loadPathConfig();
+        const projectPath = Editor.Project.path;
+        const uiNameFilePath = path.join(projectPath, 'assets', targetDir, 'UIName.ts');
+
+        let content;
+        if (fs.existsSync(uiNameFilePath)) {
+            content = fs.readFileSync(uiNameFilePath, 'utf8');
+        } else {
+            // UIName.ts 不存在，创建初始内容
+            content = `/**\n * UI名称枚举（自动生成，请勿手动修改）\n *\n * 右键生成UI脚本时会自动在此枚举中追加新条目。\n * 纯数据文件，无任何import，不参与任何循环依赖。\n */\nexport enum UIName {\n}\n`;
+        }
+
+        // 检查是否已存在该条目
+        const entryPattern = new RegExp(`\\b${className}\\s*=`);
+        if (entryPattern.test(content)) {
+            console.log(`[UI脚本生成器] UIName 枚举中已存在 ${className}，跳过`);
+            return;
+        }
+
+        // 找到枚举的最后一个 } 并在其前面插入新条目
+        const closingBraceIndex = content.lastIndexOf('}');
+        if (closingBraceIndex === -1) {
+            console.error('[UI脚本生成器] UIName.ts 格式异常，找不到枚举结束括号');
+            return;
+        }
+
+        const before = content.substring(0, closingBraceIndex);
+        const after = content.substring(closingBraceIndex);
+        const newEntry = `    ${className} = "${className}",\n`;
+        const newContent = before + newEntry + after;
+
+        fs.writeFileSync(uiNameFilePath, newContent, 'utf8');
+        console.log(`[UI脚本生成器] 已向 UIName 枚举添加: ${className}`);
+
+        // 通知 Cocos 刷新资源
+        const dbPath = `db://assets/${targetDir}/UIName.ts`;
+        try {
+            await Editor.Message.request('asset-db', 'refresh-asset', dbPath);
+        } catch (e) {
+            console.log('[UI脚本生成器] 刷新 UIName.ts 资源通知（可忽略）:', e.message);
+        }
+    } catch (error) {
+        console.error('[UI脚本生成器] 更新 UIName.ts 失败:', error);
+    }
 }
 
 // 检查文件是否存在
@@ -299,9 +350,12 @@ async function generateUIScript() {
             // 文件不存在，创建新文件
             await createScriptFile(scriptName, scriptContent);
 
+            // 自动向 UIName.ts 枚举中追加新条目
+            await addUINameEntry(scriptName);
+
             const detailMessage = nodeProperties.length > 0
-                ? `UI脚本已成功生成！\n包含 ${nodeProperties.length} 个节点属性。`
-                : `UI脚本已成功生成！\n未找到匹配的节点，生成了基础模板。`;
+                ? `UI脚本已成功生成！\n包含 ${nodeProperties.length} 个节点属性。\nUIName 枚举已自动更新。`
+                : `UI脚本已成功生成！\n未找到匹配的节点，生成了基础模板。\nUIName 枚举已自动更新。`;
 
             await showSuccess('脚本生成成功', detailMessage);
         }
@@ -432,8 +486,10 @@ function generateScriptContent(className, nodeProperties, template) {
     }
 
     // 添加基础导入
+    importStatements.push('import {UIRegistry} from \"../../../ty-framework/module/ui/UIRegistry\";');
     importStatements.push('import {UIWindow} from "../../../ty-framework/module/ui/UIWindow";');
     importStatements.push('import {IWindowAttribute} from "../../../ty-framework/module/ui/WindowAttribute";');
+    importStatements.push('import {UIName} from "./UIName";');
     const importSection = importStatements.join('\n');
 
     // 生成属性定义
@@ -467,11 +523,8 @@ function generateScriptContent(className, nodeProperties, template) {
     // 替换导入语句
     scriptContent = scriptContent.replace(/\[IMPORT_STATEMENTS\]/g, importSection);
 
-    // 替换类名
+    // 替换类名（包括 UIName.[CLASS_NAME]、UIRegistry.register(UIName.[CLASS_NAME], [CLASS_NAME]) 等）
     scriptContent = scriptContent.replace(/\[CLASS_NAME\]/g, formattedClassName);
-
-    // 替换 WINDOW_NAME 中的类名
-    scriptContent = scriptContent.replace(/return "[^"]*"/g, `return "${formattedClassName}"`);
 
     // 替换属性定义（如果没有属性，留空）
     scriptContent = scriptContent.replace(/\[PROPERTY_DEFINITIONS\]/g, propertyDefinitions || '');

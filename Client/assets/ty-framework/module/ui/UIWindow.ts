@@ -138,18 +138,14 @@ export class UIWindow extends UIBase {
         }
     }
 
-    getType(): { new(): UIWindow } {
-        return this.constructor as new () => UIWindow;
-    }
-
     /** 隐藏窗口 */
     public hide(): void {
-        tyou.ui.hideWindow(this.getType());
+        tyou.ui.hideWindow(this.windowName);
     }
 
     /** 关闭窗口 */
     public close(): void {
-        tyou.ui.closeWindow(this.getType());
+        tyou.ui.closeWindow(this.windowName);
     }
 
     /** 取消隐藏关闭计时器 */

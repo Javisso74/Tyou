@@ -1,12 +1,15 @@
 import {Camera, find, Node, Widget} from "cc";
-import {MessageBoxType, MessageBoxUI} from "../../../scripts/logic/ui/MessageBoxUI";
 import List from "../../core/collections/List";
 import {GameEvent} from "../../core/GameEvent";
 import {Module} from "../Module";
 import {UIBlurBackground} from "./blur/UIBlurBackground";
 import {TipManager} from "./TipManager";
+import {UIRegistry} from "./UIRegistry";
 import {UIWindow} from "./UIWindow";
 import {IWindowAttribute, UILayer} from "./WindowAttribute";
+
+/** UIModule 接受的窗口标识：可以是 UI 类名字符串，也可以是 UI 类构造函数（向后兼容） */
+export type UIWindowRef = string | (new () => UIWindow);
 
 /**
  * UI模块
@@ -96,9 +99,30 @@ export class UIModule extends Module {
         // 移除常驻节点等操作
     }
 
-    /** 显示UI窗口（异步） */
-    public async showUIAsync(wnd: new () => UIWindow, ...args: any[]): Promise<UIWindow | null> {
-        const type = (wnd as any).WINDOW_NAME;
+    /**
+     * 解析窗口引用，返回 [窗口名, 构造函数]
+     * 支持字符串（通过 UIRegistry 查找）或直接传入类
+     */
+    private resolveWindowRef(wnd: UIWindowRef): [string, new () => UIWindow] | null {
+        if (typeof wnd === 'string') {
+            const ctor = UIRegistry.get(wnd) as (new () => UIWindow) | undefined;
+            if (!ctor) {
+                console.error(`[UIModule] UI "${wnd}" not found in UIRegistry. Did you forget UIRegistry.register("${wnd}", ${wnd})?`);
+                return null;
+            }
+            return [wnd, ctor];
+        } else {
+            return [(wnd as any).WINDOW_NAME as string, wnd];
+        }
+    }
+
+    /** 显示UI窗口（异步）。wnd 可以传入类名字符串（推荐）或类构造函数 */
+    public async showUIAsync(wnd: UIWindowRef, ...args: any[]): Promise<UIWindow | null> {
+        const resolved = this.resolveWindowRef(wnd);
+        console.log(`[UIModule] showUIAsync called with wnd=${typeof wnd === 'string' ? wnd : (wnd as any).WINDOW_NAME}, resolved=${resolved ? resolved[0] : 'null'}`);
+        if (!resolved) return null;
+        const [type, wndClass] = resolved;
+
         // 检查是否已存在
         let window = this._windowInstances.get(type);
         if (window) {
@@ -109,7 +133,7 @@ export class UIModule extends Module {
             return window;
         }
 
-        window = new wnd();
+        window = new wndClass();
         const windowName = type;
         window.init(
             windowName,
@@ -125,9 +149,9 @@ export class UIModule extends Module {
         return window;
     }
 
-    /** 关闭窗口 */
-    public closeWindow(wnd: new() => UIWindow): void {
-        const windowName = (wnd as any).WINDOW_NAME;
+    /** 关闭窗口。wnd 可以传入类名字符串（推荐）或类构造函数 */
+    public closeWindow(wnd: UIWindowRef): void {
+        const windowName = typeof wnd === 'string' ? wnd : (wnd as any).WINDOW_NAME;
         const window = this._windowInstances.get(windowName);
         if (window) {
             window.baseDestroy();
@@ -139,14 +163,14 @@ export class UIModule extends Module {
         }
     }
 
-    /** 隐藏窗口 */
-    public hideWindow(wnd: new () => UIWindow): void {
-        const windowName = (wnd as any).WINDOW_NAME;
+    /** 隐藏窗口。wnd 可以传入类名字符串（推荐）或类构造函数 */
+    public hideWindow(wnd: UIWindowRef): void {
+        const windowName = typeof wnd === 'string' ? wnd : (wnd as any).WINDOW_NAME;
         const window = this._windowInstances.get(windowName);
         if (!window) return;
 
         if (window.hideTimeToClose <= 0) {
-            this.closeWindow(wnd);
+            this.closeWindow(windowName);
             return;
         }
 
@@ -156,7 +180,7 @@ export class UIModule extends Module {
 
         // 设置隐藏计时器
         window.hideTimerId = tyou.timer.addTimer(() => {
-            this.closeWindow(wnd);
+            this.closeWindow(windowName);
         }, window.hideTimeToClose);
 
         if (window.fullScreen) {
@@ -175,15 +199,15 @@ export class UIModule extends Module {
         this.refreshBlurBg().then();
     }
 
-    /** 获取窗口实例 */
-    public getWindow(wnd: new () => UIWindow): UIWindow | null {
-        const windowName = (wnd as any).WINDOW_NAME;
+    /** 获取窗口实例。wnd 可以传入类名字符串（推荐）或类构造函数 */
+    public getWindow(wnd: UIWindowRef): UIWindow | null {
+        const windowName = typeof wnd === 'string' ? wnd : (wnd as any).WINDOW_NAME;
         return this._windowInstances.get(windowName) || null;
     }
 
-    /** 检查窗口是否存在 */
-    public hasWindow(wnd: new () => UIWindow): boolean {
-        const windowName = (wnd as any).WINDOW_NAME;
+    /** 检查窗口是否存在。wnd 可以传入类名字符串（推荐）或类构造函数 */
+    public hasWindow(wnd: UIWindowRef): boolean {
+        const windowName = typeof wnd === 'string' ? wnd : (wnd as any).WINDOW_NAME;
         return this._windowInstances.has(windowName);
     }
 
@@ -337,12 +361,12 @@ export class UIModule extends Module {
 
     message(params?) {
         const _params = params || {title: "提示", content: "是否确定"};
-        this.showUIAsync(MessageBoxUI, MessageBoxType.One, _params)
+        this.showUIAsync("MessageBoxUI", 0 /* MessageBoxType.One */, _params)
     }
 
     select(params?) {
         const _params = params || {title: "提示", content: "是否确定"};
-        this.showUIAsync(MessageBoxUI, MessageBoxType.Two, _params)
+        this.showUIAsync("MessageBoxUI", 1 /* MessageBoxType.Two */, _params)
     }
 
     private getTopNonFullScreenWindowInstance(): UIWindow | null {

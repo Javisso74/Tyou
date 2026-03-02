@@ -1,6 +1,8 @@
 import {Label, Layout, Node, Sprite} from "cc";
+import {UIRegistry} from "../../../ty-framework/module/ui/UIRegistry";
 import {UIWindow} from "../../../ty-framework/module/ui/UIWindow";
 import {IWindowAttribute, UILayer} from "../../../ty-framework/module/ui/WindowAttribute";
+import {UIName} from "./UIName";
 
 export enum MessageBoxType {
     One,
@@ -22,7 +24,7 @@ export class MessageBoxUI extends UIWindow {
     private _textTitle: Label;
 
     static get WINDOW_NAME(): string {
-        return "MessageBoxUI";
+        return UIName.MessageBoxUI;
     }
 
     override bindMemberProperty() {
@@ -87,3 +89,5 @@ export class MessageBoxUI extends UIWindow {
 
     }
 }
+
+UIRegistry.register(UIName.MessageBoxUI, MessageBoxUI);

@@ -1,7 +1,7 @@
 import {_decorator, Component, director, Node} from 'cc';
 import {LoadingUI} from "../asset-art/ui/LoadingUI";
 import {SceneEnum} from "../ty-framework/module/scene/Scene";
-import {TestUI} from "./logic/ui/TestUI";
+import {UIName} from "./logic/ui/UIName";
 
 
 const {ccclass, property} = _decorator;
@@ -70,8 +70,8 @@ export class Main extends Component {
         tyou.audio.playBGM("BGM_Main");
         await tyou.table.onCreate();
         await tyou.scene.loadSceneAsync(SceneEnum.Login)
-       // await tyou.ui.showUIAsync(LoginUI);
-        await tyou.ui.showUIAsync(TestUI);
+       // await tyou.ui.showUIAsync(UIName.LoginUI);
+        await tyou.ui.showUIAsync(UIName.TestUI);
         LoadingUI.Instance.finishProgress();
     }
 

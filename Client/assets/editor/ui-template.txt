@@ -5,7 +5,7 @@ export class [CLASS_NAME] extends UIWindow {
 [PROPERTY_DEFINITIONS]
 
     static get WINDOW_NAME(): string {
-        return "[CLASS_NAME]";
+        return UIName.[CLASS_NAME];
     }		
 
     override bindMemberProperty() {
@@ -35,3 +35,5 @@ export class [CLASS_NAME] extends UIWindow {
         
     }
 }
+
+UIRegistry.register(UIName.[CLASS_NAME], [CLASS_NAME]);
