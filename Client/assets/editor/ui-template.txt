@@ -1,0 +1,37 @@
+[IMPORT_STATEMENTS]
+
+export class [CLASS_NAME] extends UIWindow {
+    //#region UI组件引用
+[PROPERTY_DEFINITIONS]
+
+    static get WINDOW_NAME(): string {
+        return "[CLASS_NAME]";
+    }		
+
+    override bindMemberProperty() {
+[BIND_STATEMENTS]
+    }
+
+    override registerEvent() {
+[EVENT_STATEMENTS]
+    }
+    //#endregion
+
+[CLICK_METHODS]
+
+    protected get customAttributeOverride(): Partial<IWindowAttribute> {
+        return { };
+    }
+
+    override onCreate() {
+
+    }
+
+    override onRefresh() {
+
+    }
+
+    override onClosed() {
+        
+    }
+}

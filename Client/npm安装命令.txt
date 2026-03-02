@@ -1,0 +1,5 @@
+# 安装所有列出的依赖包
+npm install @types/node@17.0.25
+
+# 安装开发依赖
+npm install base64-js@1.5.1 buffer@6.0.3 ieee754@1.2.1 --save-dev

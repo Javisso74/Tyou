@@ -1,0 +1,16 @@
+{
+  "name": "Client",
+  "uuid": "b4d847d0-9378-4ced-8124-807fd78ce1bd",
+  "creator": {
+    "version": "3.8.7"
+  },
+  "dependencies": {
+    "@types/node": "^17.0.25"
+  },
+  "devDependencies": {
+    "base64-js": "^1.5.1",
+    "buffer": "^6.0.3",
+    "ieee754": "^1.2.1",
+    "typescript": "^4.9.5"
+  }
+}

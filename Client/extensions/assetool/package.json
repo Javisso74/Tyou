@@ -1,0 +1,36 @@
+{
+  "$schema": "./@types/schema/package/index.json",
+  "package_version": 2,
+  "name": "assetool",
+  "version": "1.0.0",
+  "author": "starry",
+  "editor": ">=3.8.7",
+  "scripts": {
+    "preinstall": "node ./scripts/preinstall.js",
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "description": "i18n:assetool.description",
+  "main": "./editor/AssetIndexGenerator.js",
+  "devDependencies": {
+    "@cocos/creator-types": "^3.8.7",
+    "@types/node": "^18.17.1",
+    "typescript": "^5.8.2"
+  },
+  "contributions": {
+    "menu": [
+      {
+        "path": "Tools",
+        "label": "Generate Asset Index",
+        "message": "show-log"
+      }
+    ],
+    "messages": {
+      "show-log": {
+        "methods": [
+          "showLog"
+        ]
+      }
+    }
+  }
+}

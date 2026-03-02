@@ -1,0 +1,86 @@
+{
+  "scanConfigs": [
+    {
+      "dir": "asset-raw/actor",
+      "extensions": [
+        "prefab"
+      ]
+    },
+    {
+      "dir": "asset-raw/audio",
+      "extensions": [
+        "mp3",
+        "wav",
+        "ogg"
+      ]
+    },
+    {
+      "dir": "asset-raw/effect",
+      "extensions": [
+        "prefab"
+      ]
+    },
+    {
+      "dir": "asset-raw/scene",
+      "extensions": [
+        "scene",
+        "prefab"
+      ]
+    },
+    {
+      "dir": "asset-raw/ui",
+      "extensions": [
+        "prefab"
+      ]
+    },
+    {
+      "dir": "asset-raw/ui-raw/atlas",
+      "extensions": [
+        "plist"
+      ]
+    },
+    {
+      "dir": "asset-raw/ui-raw/raw",
+      "extensions": [
+        "png",
+        "jpg"
+      ]
+    },
+    {
+      "dir": "asset-raw/config"
+    },
+    {
+      "dir": "asset-raw/spine",
+      "extensions": [
+        "skel",
+        "json"
+      ]
+    },
+    {
+      "dir": "asset-raw/anim",
+      "extensions": [
+        "anim"
+      ]
+    }
+  ],
+  "outputPath": "resources/asset-index.json",
+  "resourceTypeMap": {
+    "prefab": "Prefab",
+    "png": "SpriteFrame",
+    "jpg": "SpriteFrame",
+    "plist": "SpriteAtlas",
+    "mp3": "AudioClip",
+    "wav": "AudioClip",
+    "ogg": "AudioClip",
+    "ttf": "Font",
+    "otf": "Font",
+    "json": "JsonAsset",
+    "txt": "TextAsset",
+    "anim": "AnimationClip",
+    "scene": "Scene",
+    "skel": "sp.SkeletonData"
+  },
+  "specialMarks": {
+    "preload": ["P_", "p_"]
+  }
+}

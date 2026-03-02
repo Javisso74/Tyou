@@ -1,0 +1,18 @@
+{
+  "componentConfig": [
+    {"prefix": "m_go", "component": "Node"},
+    {"prefix": "m_tf", "component": "UITransform"},
+    {"prefix": "m_text", "component": "Label"},
+    {"prefix": "m_btn", "component": "Node"},
+    {"prefix": "m_img", "component": "Sprite"},
+    {"prefix": "m_grid", "component": "Layout"},
+    {"prefix": "m_list", "component": "ListView"},
+    {"prefix": "m_scroll", "component": "ScrollView"},
+    {"prefix": "m_toggle", "component": "Toggle"},
+    {"prefix": "m_slider", "component": "Slider"},
+    {"prefix": "m_progress", "component": "ProgressBar"},
+    {"prefix": "m_eb", "component": "EditBox"},
+    {"prefix": "m_rt", "component": "RichText"}
+  ],
+  "tsDirPath": "scripts/logic/ui"
+}
