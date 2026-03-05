@@ -1,6 +1,7 @@
 # Tyou
 
-CocosCreator 3.8.7 基础框架，比较适合 Unity 初转型 CCC 的使用者。参考了 Unity 开源框架 **TEngine** 和 **YouYouFrameWork** 以及 CocosCreator 一些开源框架。（如果对你有帮助，给个star就好了。）
+CocosCreator 3.8.7 基础框架，比较适合 Unity 初转型 CCC 的使用者。参考了 **TEngine** 等开源框架。
+（如果对你有帮助，给个star就好了。）
 
 ## 特性概览
 
